@@ -4,24 +4,37 @@
   ; ah <- 0x0e      	- bios scrolling teletype routine   
   ; al <- ascii char	- char to display
   
-  ; simple function call
+  ; print string
+
+  [org 0x7c00]
 
   mov bp, 0x8000
   mov sp, bp
-
-  mov al, 'h'
-  call print_func
-  mov al, 'i'
-  call print_func
-  mov al, ' '
-  call print_func
+  
+  mov bx, hello_msg
+  call print_string
+  mov bx, bye_msg
+  call print_string
 
   jmp $			          ; $ - current address, endless loop
 
-  print_func:
+  print_string:
+    .start: 
+    mov al, [bx]
+    cmp al, 0
+    je .done
     mov ah, 0x0e
     int 0x10
-    ret
+    add bx, 1
+    jmp .start
+    .done:
+      ret
+
+  hello_msg:
+    db "hello there",0x0D,0xA,0
+
+  bye_msg:
+    db "bye my friend",0x0D,0xA,0
 
   times 510-($-$$) db 0	 ; padding, fill 510 zeros
   dw 0xaa55		 ; boot sector signature 
