@@ -34,7 +34,7 @@
   add bx, 0x7c00
   mov al, [bx]
   int 0x10 
-
+ 
   mov al, [0x7c1e]
   int 0x10
 
