@@ -1,41 +1,27 @@
 ; boot sector
 
-  ; int 0x10 		- screen-related interrupts
-  ; ah <- 0x0e  	- bios scrolling teletype routine   
+  ; int 0x10 		      - screen-related interrupts
+  ; ah <- 0x0e      	- bios scrolling teletype routine   
   ; al <- ascii char	- char to display
   
-  [org 0x7c00]
-
-  mov ah, 0x0e		; enable teletype mode
-
-  ; simple stack
+  ; simple function call
 
   mov bp, 0x8000
   mov sp, bp
 
-  push 'A'
-  push 'B'
-  push 'C'
+  mov al, 'h'
+  call print_func
+  mov al, 'i'
+  call print_func
+  mov al, ' '
+  call print_func
 
-  ; print C
-  pop bx
-  mov al, bl
-  int 0x10
+  jmp $			          ; $ - current address, endless loop
 
-  ; print B
-  pop bx
-  mov al, bl
-  int 0x10
-
-  ; print A
-  pop bx
-  mov al, bl
-  int 0x10
-
-  jmp $			; $ - current address, endless loop
-
-  secret:
-    db "My awesome OS!", 0
+  print_func:
+    mov ah, 0x0e
+    int 0x10
+    ret
 
   times 510-($-$$) db 0	 ; padding, fill 510 zeros
   dw 0xaa55		 ; boot sector signature 
