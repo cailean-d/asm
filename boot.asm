@@ -8,6 +8,19 @@
 
   [org 0x7c00]
 
+  ; clear screen
+  mov ax, 0x0700
+  mov bh, 0x07
+  mov dx, 0x184f
+  int 0x10
+
+  ; set cursor at start
+  
+  mov ah, 0x2
+  mov bh, 0x0
+  mov dx, 0x0000
+  int 0x10
+
   mov bp, 0x8000
   mov sp, bp
   
