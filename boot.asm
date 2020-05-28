@@ -5,12 +5,19 @@
   %include "clear_screen.asm"
   %include "reset_cursor.asm"
 
-  mov bp, 0x8000
+  mov bp, 0x8000    ; stack 1024 bytes
   mov sp, bp
 
-  mov dx, 17              ; print_address uses dx as source  
-  call print_address
-  call print_ln
+  push 'a'
+  push 'b'
+  
+  mov ax, [bp-2]
+  call print_char
+  
+  mov ax, [bp-4]
+  call print_char
+  
+
 
   jmp $			              ; $ - current address, endless loop
 
