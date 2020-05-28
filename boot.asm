@@ -14,9 +14,9 @@
   jmp $			              ; $ - current address, endless loop
   
   %include "print_hex_address.asm"
+  %include "print_bin_address.asm"
   %include "print_hex_num.asm"
-  %include "print_address.asm"
-  %include "print_num.asm"
+  %include "print_dec_num.asm"
   %include "print_char.asm"
   %include "print_ln.asm"
   
