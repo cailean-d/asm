@@ -4,8 +4,6 @@
   ; ah <- 0x0e      	- bios scrolling teletype routine   
   ; al <- ascii char	- char to display
   
-  ; print string
-
   [org 0x7c00]
 
   ; clear screen
@@ -14,8 +12,7 @@
   mov dx, 0x184f
   int 0x10
 
-  ; set cursor at start
-  
+  ; reset cursor
   mov ah, 0x2
   mov bh, 0x0
   mov dx, 0x0000
@@ -23,32 +20,52 @@
 
   mov bp, 0x8000
   mov sp, bp
-  
-  mov bx, hello_msg
-  call print_string
-  mov bx, bye_msg
-  call print_string
 
-  jmp $			          ; $ - current address, endless loop
+  mov dx, 17              ; print_address uses dx as source  
+  call print_address
+  call print_ln
 
-  print_string:
-    .start: 
-    mov al, [bx]
-    cmp al, 0
-    je .done
+  jmp $			              ; $ - current address, endless loop
+
+  print_address:
+    mov cl, 15            ; shift counter, 1000 -> 3 = 0001 
+   
+    ; print '0b' before binary numbers  
+    mov al, '0'
+    call print_char
+    mov al, 'b'
+    call print_char
+
+   .loop:
+    mov ax, dx            ; temp var to get higher  bit
+    shr ax, cl
+    and ax, 1
+    call print_num
+    sub cl, 1
+    cmp cl, 0
+    jge .loop
+    ret
+
+  print_num:
+    mov ah, 0x0e
+    add al, 48             ; offset, convert num to char
+    int 0x10
+    ret
+
+  print_char:
     mov ah, 0x0e
     int 0x10
-    add bx, 1
-    jmp .start
-    .done:
-      ret
+    ret
+  
+  print_ln:
+    mov ah, 0x0e
+    mov al, 0xd
+    int 0x10
+    mov al, 0xa
+    int 0x10
+    ret  
+  
 
-  hello_msg:
-    db "hello there",0x0D,0xA,0
-
-  bye_msg:
-    db "bye my friend",0x0D,0xA,0
-
-  times 510-($-$$) db 0	 ; padding, fill 510 zeros
-  dw 0xaa55		 ; boot sector signature 
+  times 510-($-$$) db 0	   ; padding, fill 510 zeros
+  dw 0xaa55		             ; boot sector signature 
 
