@@ -8,19 +8,13 @@
   mov bp, 0x8000    ; stack 1024 bytes
   mov sp, bp
 
-  push 'a'
-  push 'b'
+  mov dx, 0x8000
+  call print_hex_address
   
-  mov ax, [bp-2]
-  call print_char
-  
-  mov ax, [bp-4]
-  call print_char
-  
-
-
   jmp $			              ; $ - current address, endless loop
-
+  
+  %include "print_hex_address.asm"
+  %include "print_hex_num.asm"
   %include "print_address.asm"
   %include "print_num.asm"
   %include "print_char.asm"
