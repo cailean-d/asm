@@ -9,13 +9,14 @@
   mov bp, 0x8000    ; stack 1024 bytes
   mov sp, bp
 
-  .loop:
-  mov ah, 0x00  ; read char
-  int 0x16      ; keyboard irq
-  mov ah, al
-  call print_char
-  jmp .loop
-
+  mov ax, 13
+  mov dx, 7
+  div dx
+ 
+  ; print result
+  mov dx, ax 
+  call print_hex_address
+  
   jmp $			              ; $ - current address, endless loop
 
   my_byte dw 17
