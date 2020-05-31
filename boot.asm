@@ -9,20 +9,15 @@
   mov bp, 0x8000    ; stack 1024 bytes
   mov sp, bp
 
-  .loop:
-  mov ah, 0x00  ; read char
-  int 0x16      ; keyboard irq
-  mov ah, al
-  call print_char
-  jmp .loop
+  mov ax, 123 
+  call print_dec_address
 
-  jmp $			              ; $ - current address, endless loop
-
-  my_byte dw 17
+  jmp $			              ; $ - current address, endless loop    
 
   %include "sum_func.asm"
   %include "print_hex_address.asm"
   %include "print_bin_address.asm"
+  %include "print_dec_address.asm"
   %include "print_hex_num.asm"
   %include "print_dec_num.asm"
   %include "print_char.asm"
