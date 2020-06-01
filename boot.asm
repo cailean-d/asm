@@ -18,6 +18,10 @@
   %include "reset_drive.asm"
   %include "read_second_sector.asm"  
 
+  mov bx, disk_error_msg
+  call print_string
+  call print_ln
+
   ; jump to 2nd sector if no error
   jnc disk_success
 
@@ -34,7 +38,7 @@
 
     jmp $			              ; endless loop    
 
-  disk_error_msg: db 'e'
+  disk_error_msg: db 'Cannot read disk sector', 0
   BOOT_DRIVE: db 0
 
   %include "sum_func.asm"
@@ -44,6 +48,7 @@
   %include "print_hex_num.asm"
   %include "print_dec_num.asm"
   %include "print_char.asm"
+  %include "print_string.asm"
   %include "print_ln.asm"
   
   times 510-($-$$) db 0	   ; padding, fill zeros
