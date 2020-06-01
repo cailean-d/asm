@@ -13,21 +13,17 @@
   ; save boot drive
   mov [BOOT_DRIVE], dl
 
-  %include "clear_screen.asm"
-  %include "reset_cursor.asm"
-  %include "reset_drive.asm"
-  %include "read_second_sector.asm"  
-
-  mov bx, disk_error_msg
-  call print_string
-  call print_ln
+  %include "bios_helpers/clear_screen.asm"
+  %include "bios_helpers/reset_cursor.asm"
+  %include "bios_helpers/reset_drive.asm"
+  %include "bios_helpers/read_second_sector.asm"  
 
   ; jump to 2nd sector if no error
   jnc disk_success
 
   disk_error:
-    mov al, [disk_error_msg]
-    call print_char
+    mov bx, disk_error_msg
+    call print_string
     jmp end
   
   disk_success:
@@ -42,14 +38,14 @@
   BOOT_DRIVE: db 0
 
   %include "sum_func.asm"
-  %include "print_hex_address.asm"
-  %include "print_bin_address.asm"
-  %include "print_dec_address.asm"
-  %include "print_hex_num.asm"
-  %include "print_dec_num.asm"
-  %include "print_char.asm"
-  %include "print_string.asm"
-  %include "print_ln.asm"
+  %include "bios_helpers/print_hex_address.asm"
+  %include "bios_helpers/print_bin_address.asm"
+  %include "bios_helpers/print_dec_address.asm"
+  %include "bios_helpers/print_hex_num.asm"
+  %include "bios_helpers/print_dec_num.asm"
+  %include "bios_helpers/print_char.asm"
+  %include "bios_helpers/print_string.asm"
+  %include "bios_helpers/print_ln.asm"
   
   times 510-($-$$) db 0	   ; padding, fill zeros
   dw 0xaa55		             ; boot sector signature 
