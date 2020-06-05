@@ -50,10 +50,39 @@
   times 510-($-$$) db 0	   ; padding, fill zeros
   dw 0xaa55		             ; boot sector signature 
   
-  mov ah, 0x0e
-  mov al, 'G'
-  int 0x10
+  [bits 32]  
+
+  VIDEO_MEMORY equ 0xb8000
+  WHITE_ON_BLACK equ 0x0f
+
+  mov al, 'X'
+  mov ah, WHITE_ON_BLACK
+  mov [0xb8000], ax
+
+ ; mov ebx, hello_msg
+  ;call print_string
+  
   jmp $
+
+  ; ebx - pointer to string
+  print_string_x:
+    pusha
+    mov edx, VIDEO_MEMORY
+    .loop:
+      mov al, [ebx]  
+      mov ah, WHITE_ON_BLACK
+      cmp al, 0
+      je .done
+      mov [edx], ax
+      add ebx, 1
+      add edx, 2
+      jmp .loop
+    .done:
+      popa
+      ret
+
+
+  hello_msg: db 'Hello there'
 
   times 512 db 'V'
   times 512 db 'M'
