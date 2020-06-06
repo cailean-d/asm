@@ -4,7 +4,7 @@
   [bits 16]
 
   ; prepare stack frame
-  mov bp, 0x7c00    ; 30kb memory available down to 0x500
+  mov bp, 0x7c00    ; 30kb memory available down to 0x500 (0x500-0x7c00)
   mov sp, bp
 
   mov bx, 0x7c0
@@ -50,17 +50,63 @@
   times 510-($-$$) db 0	   ; padding, fill zeros
   dw 0xaa55		             ; boot sector signature 
   
-  [bits 32]  
+  ; ----------------------
+  ; SECTOR 2
+  ; ----------------------
 
   VIDEO_MEMORY equ 0xb8000
   WHITE_ON_BLACK equ 0x0f
 
-  mov al, 'X'
-  mov ah, WHITE_ON_BLACK
-  mov [0xb8000], ax
+  ; mov bx, 0xb800 ; start of video memory
+  ; mov es, bx
+  ; mov bx, 0x00 ; offset
 
- ; mov ebx, hello_msg
-  ;call print_string
+  ; ; write 'X' on screen
+  ; mov al, 'X'
+  ; mov ah, WHITE_ON_BLACK
+  ; mov [es:bx], ax
+
+  ; ;mov ebx, hello_msg
+  ; ;call print_string
+
+
+  [bits 32]  
+
+  GDT_START:
+    GDT_NULL:   ; null descriptor (8 bytes)
+    dq 0x0
+  ; offset 0x8
+  GDT_CODE:     ; code segment descriptor | cs
+    dw 0xffff   ; segment limit (bits 0-15)
+    dw 0x0      ; base (bits 0-15)
+    db 0x0      ; base (bits 16-23)
+    ; flags: 1(present), 00(privilege), 1(descriptor type) -> 1001
+    ; type flags: 1(code), 0(conforming), 1(readable), 0(accessed) -> 1010
+    db 10011010b
+    ; flags
+    ; 1(granularity), 1(32-bit default), 0(64-bit seg), 0(AVL) -> 1100
+    db 11001111b
+    db 0x0      ; base (bits 24-31)
+  ; offset 0x10
+  GDT_DATA:     ; data segment descriptor | ds, ss, es, fs, gs
+    dw 0xffff   ; segment limit (0-15)
+    dw 0x0      ; base (0-15)
+    db 0x0      ; base (16-23)
+    ; type flags: 0(code), 0(expand down), 1(writable), 0(accessed) -> 0010
+    db 10010010b
+    db 11001111b
+    db 0x0
+  GDT_END:
+
+  GDT_DESCRIPTOR:
+    dw GDT_END - GDT_START - 1
+    dd GDT_START
+
+
+  ; some useful constant for segment registers
+  ; when we set DS = 0x10, thats mean offset from GDT
+  CODE_SEG equ GDT_CODE - GDT_START
+  DATA_SEG equ GDT_DATA - GDT_START
   
   jmp $
 
