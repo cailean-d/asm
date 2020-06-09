@@ -127,30 +127,11 @@
     ; sti   ; enable interrupts
 
     mov ebx, hello_msg
-    call print_string_x
+    call print_string_prot
     jmp $
 
-  
-  VIDEO_MEMORY equ 0xb8000
-  WHITE_ON_BLACK equ 0x0f
-
-  ; ebx - pointer to string
-  print_string_x:
-    pusha
-    mov edx, VIDEO_MEMORY
-    .loop:
-      mov al, [ebx]  
-      mov ah, WHITE_ON_BLACK
-      cmp al, 0
-      je .done
-      mov [edx], ax
-      add ebx, 1
-      add edx, 2
-      jmp .loop
-    .done:
-      popa
-      ret
-
+ 
+  %include "protection_mode/print_string_prot.asm"
 
   hello_msg: db 'Hello from protection mode', 0
 
