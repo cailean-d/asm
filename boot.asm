@@ -84,8 +84,6 @@
     ; call kernel written in C
     call KERNEL_OFFSET
 
-    jmp $
-
   times 510-($-$$) db 0	   ; padding, fill zeros
   dw 0xaa55		             ; boot sector signature 
  
