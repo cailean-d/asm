@@ -1,4 +1,5 @@
   ; __cdecl  add(short a, short b) -> short
+  ; __cdecl  add(short a, short b, short res) -> void
   ; arguments and return address on stack
 
   sum_func:

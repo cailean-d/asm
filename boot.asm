@@ -3,59 +3,20 @@
   [org 0x7c00]
   [bits 16]
 
-  ; prepare stack frame
-  mov bp, 0x7c00    ; 30kb memory available down to 0x500 (0x500-0x7c00)
-  mov sp, bp
+  jmp START
 
-  ; mov bx, 0x7c0
-  ; mov ds, bx        ; set data segment 
-
-  ; save boot drive
-  mov [BOOT_DRIVE], dl
-
-  %include "bios_helpers/clear_screen.asm"
-  %include "bios_helpers/reset_cursor.asm"
-  %include "bios_helpers/reset_drive.asm"
-  %include "bios_helpers/read_second_sector.asm"  
-
-  ; jump to 2nd sector if no error
-  jnc disk_success
-
-  disk_error:
-    mov bx, disk_error_msg
-    call print_string
-    jmp end
-  
-  disk_success:
-    ; jump to 2nd sector, absolute address 
-    jmp 0x00:0x7e00
-
-  end:
-
-    jmp $			              ; endless loop    
+  KERNEL_OFFSET equ 0x1000
+  LOAD_SECTORS equ 15
 
   disk_error_msg: db 'Cannot read disk sector', 0
+  real_mode_msg: db 'Started in 16-bit Real Mode', 0
+  prot_mode_msg: db 'Successfully landed in 32-bit Protected Mode', 0
+  load_kernel_msg: db 'Loading kernel into memory', 0
   BOOT_DRIVE: db 0
 
-  ; %include "sum_func.asm"
-  %include "bios_helpers/print_hex_address.asm"
-  %include "bios_helpers/print_bin_address.asm"
-  %include "bios_helpers/print_dec_address.asm"
-  %include "bios_helpers/print_hex_num.asm"
-  %include "bios_helpers/print_dec_num.asm"
-  %include "bios_helpers/print_char.asm"
   %include "bios_helpers/print_string.asm"
+  %include "bios_helpers/print_char.asm"
   %include "bios_helpers/print_ln.asm"
-  
-  times 510-($-$$) db 0	   ; padding, fill zeros
-  dw 0xaa55		             ; boot sector signature 
-  
-  ; ----------------------
-  ; SECTOR 2 - 0x7e00
-  ; ----------------------
-
-  jmp SWITCH_TO_PROTECTION_MODE
-
   %include "protection_mode/gdt_table.asm"
 
   ; some useful constant for segment registers
@@ -63,8 +24,36 @@
   CODE_SEG equ GDT_CODE - GDT_START
   DATA_SEG equ GDT_DATA - GDT_START
 
-  SWITCH_TO_PROTECTION_MODE:
+  START:
 
+  ; prepare stack frame
+  mov bp, 0x7c00    ; 30kb memory available down to 0x500 (0x500-0x7c00)
+  mov sp, bp
+
+  ; save boot drive
+  mov [BOOT_DRIVE], dl
+
+  ; clear screen
+  %include "bios_helpers/clear_screen.asm"
+  %include "bios_helpers/reset_cursor.asm"
+
+  mov bx, real_mode_msg
+  call print_string
+  call print_ln
+
+  %include "bios_helpers/reset_drive.asm"
+  %include "bios_helpers/load_kernel.asm"  
+
+  ; if no disk errors
+  jnc SWITCH_TO_PROTECTION_MODE
+
+  disk_error:
+    mov bx, disk_error_msg
+    call print_string
+    jmp $
+
+  
+  SWITCH_TO_PROTECTION_MODE:
     cli   ; disable interrupts
     lgdt [GDT_DESCRIPTOR]   ; load gdt table
 
@@ -88,25 +77,15 @@
     mov fs, ax
     mov gs, ax
 
-    ; code segment
-    ; mov ax, CODE_SEG
-    ; mov cs, ax
-
     ; update stack
     mov ebp, 0x90000
     mov esp, ebp
 
-    ; sti   ; enable interrupts
+    ; call kernel written in C
+    call KERNEL_OFFSET
 
-    mov ebx, hello_msg
-    call print_string_prot
     jmp $
 
+  times 510-($-$$) db 0	   ; padding, fill zeros
+  dw 0xaa55		             ; boot sector signature 
  
-  %include "protection_mode/print_string_prot.asm"
-
-  hello_msg: db 'Hello from protection mode', 0
-
-  times 512 db 'V'
-  times 512 db 'M'
-
