@@ -1,5 +1,5 @@
-#ifndef PORT_UTILS
-#define PORT_UTILS
+#ifndef PORT_UTILS_H
+#define PORT_UTILS_H
 
 unsigned char port_byte_read(unsigned short port);
 void port_byte_write(unsigned short port, unsigned char data);
