@@ -10,15 +10,10 @@
   mov ch, 0 ; cylinder
   mov dh, 0 ; head
   mov cl, 2 ; sector (1:_)
-  mov al, 1 ; read n sectors
+  mov al, LOAD_SECTORS ; read n sectors
 
   ; set segment which we want to read to [ES:BX]
   mov bx, 0x0 ; segment - from memory start
   mov es, bx
   mov bx, KERNEL_OFFSET ; offset
-  .loop:
-    int 0x13 ; interrupt for disk routines
-    add cl, 1
-    add bx, 0x200
-    cmp cl, LOAD_SECTORS
-    jne .loop
+  int 0x13 ; interrupt for disk routines

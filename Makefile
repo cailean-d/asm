@@ -1,28 +1,37 @@
 all: run
 
 # load to os emulator
-run: build/os-image.bin
-	qemu-system-x86_64 -drive format=raw,file=build/os-image.bin -drive format=raw,file=build/empty_drive.bin
+run: build/os-image.bin build/empty_drive.bin
+	qemu-system-x86_64 -drive format=raw,file=$(word 1,$^) -drive format=raw,file=$(word 2,$^)
 
 clean:
-	rm *.bin *.o
+	rm build/*.*
 
 # final os image
-build/os-image.bin: build/kernel.bin build/boot.bin
-	cat build/boot.bin build/kernel.bin > build/os-image.bin
+build/os-image.bin: build/boot.bin build/kernel.bin
+	cat $^ > $@
 
 # binary file of bootloader
 build/boot.bin: boot.asm
-	nasm boot.asm -o build/boot.bin -f bin
+	nasm $< -o $@ -f bin
 
 # binary file of kernel written in C
-build/kernel.bin: build/kernel.o build/kernel_entry.o
-	ld -m elf_i386 -o build/kernel.bin -Ttext 0x1000 --oformat binary build/kernel_entry.o build/kernel.o
+build/kernel.bin: build/kernel_entry.o build/kernel.o build/port_utils.o build/screen.o build/utils.o
+	ld -m elf_i386 -o $@ -Ttext 0x7e00 $^ --oformat binary
 
 # kernel obj
 build/kernel.o : c/kernel.c
-	gcc -m32 -fno-pie -ffreestanding -c c/kernel.c -o build/kernel.o
+	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+
+build/port_utils.o : c/port_utils.c
+	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+
+build/screen.o : c/screen.c
+	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+
+build/utils.o : c/utils.c
+	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
 
 # extern call of main 
 build/kernel_entry.o: kernel_entry.asm
-	nasm kernel_entry.asm -o build/kernel_entry.o -f elf
+	nasm $< -o $@ -f elf

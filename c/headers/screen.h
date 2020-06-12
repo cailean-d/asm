@@ -6,8 +6,12 @@
 #define MAX_COLS 80
 #define WHITE_ON_BLACK 0x0f
 
+// screen device I/O ports
 #define REG_SCREEN_CTRL 0x3d4
 #define REG_SCREEN_DATA 0x3d5
+
+#define FB_HIGH_BYTE_COMMAND 14
+#define FB_LOW_BYTE_COMMAND 15
 
 void print_char(char character, int col, int row, char attributes);
 int get_screen_offset(int col, int row);

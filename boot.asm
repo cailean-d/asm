@@ -5,8 +5,10 @@
 
   jmp START
 
-  KERNEL_OFFSET equ 0x1000
-  LOAD_SECTORS equ 15
+  KERNEL_OFFSET equ 0x7e00 ; right after boot sector
+  LOAD_SECTORS equ 50 ; 512*50 = ~25kb or kernel memory
+  STACK_16BIT equ 0x7c00  ; 30kb memory available down to 0x500 (0x500-0x7c00)
+  STACK_32BIT equ 0x9fc00
 
   disk_error_msg: db 'Cannot read disk sector', 0
   real_mode_msg: db 'Started in 16-bit Real Mode', 0
@@ -27,7 +29,7 @@
   START:
 
   ; prepare stack frame
-  mov bp, 0x7c00    ; 30kb memory available down to 0x500 (0x500-0x7c00)
+  mov bp, STACK_16BIT
   mov sp, bp
 
   ; save boot drive
@@ -78,7 +80,7 @@
     mov gs, ax
 
     ; update stack
-    mov ebp, 0x90000
+    mov ebp, STACK_32BIT
     mov esp, ebp
 
     ; call kernel written in C
