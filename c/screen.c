@@ -48,9 +48,9 @@ int get_cursor() {
 void set_cursor(int offset) {
   offset /= 2;
   port_byte_write(REG_SCREEN_CTRL, FB_HIGH_BYTE_COMMAND);
-	port_byte_write(REG_SCREEN_DATA, (unsigned char) (offset & 0xFF));
-	port_byte_write(REG_SCREEN_CTRL, FB_LOW_BYTE_COMMAND);
-	port_byte_write(REG_SCREEN_DATA, (unsigned char) ((offset >> 8) & 0xFF));
+  port_byte_write(REG_SCREEN_DATA, (unsigned char) (offset & 0xFF));
+  port_byte_write(REG_SCREEN_CTRL, FB_LOW_BYTE_COMMAND);
+  port_byte_write(REG_SCREEN_DATA, (unsigned char) ((offset >> 8) & 0xFF));
 }
 
 void print_at(char* message, int col, int row) {
