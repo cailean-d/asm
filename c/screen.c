@@ -1,6 +1,6 @@
-#include "headers/screen.h"
-#include "headers/port_utils.h"
-#include "headers/utils.h"
+#include <screen.h>
+#include <port_utils.h>
+#include <utils.h>
 
 void print_char(char character, int col, int row, char attributes) {
   // pointer to mapped video memory

@@ -21,16 +21,16 @@ build/kernel.bin: build/kernel_entry.o build/kernel.o build/port_utils.o build/s
 
 # kernel obj
 build/kernel.o : c/kernel.c
-	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+	gcc -I_include_ -m32 -fno-pie -ffreestanding -c $< -o $@
 
 build/port_utils.o : c/port_utils.c
-	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+	gcc -I_include_ -m32 -fno-pie -ffreestanding -c $< -o $@
 
 build/screen.o : c/screen.c
-	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+	gcc -I_include_ -m32 -fno-pie -ffreestanding -c $< -o $@
 
 build/utils.o : c/utils.c
-	gcc -m32 -fno-pie -ffreestanding -c $< -o $@
+	gcc -I_include_ -m32 -fno-pie -ffreestanding -c $< -o $@
 
 # extern call of main 
 build/kernel_entry.o: kernel_entry.asm
