@@ -89,5 +89,5 @@ INIT_PROTECTION_MODE:
   ; call kernel written in C
   call KERNEL_OFFSET
 
-times 510-($-$$) db 0	   ; padding, fill zeros
-dw 0xaa55		             ; boot sector signature 
+times 510-($-$$) db 0     ; padding, fill zeros
+dw 0xaa55                 ; boot sector signature 
