@@ -1,3 +1,8 @@
+bios_load_kernel:
+  mov bx, load_kernel_msg
+  call bios_print_string
+  call bios_print_ln  
+
   xor ax, ax
   mov ds, ax
   cld
@@ -6,12 +11,11 @@
   mov ch, 0 ; cylinder
   mov dh, 0 ; head
   mov cl, 2 ; sector (1:_)
-  mov al, 1 ; read n sectors
+  mov al, LOAD_SECTORS ; read n sectors
 
   ; set segment which we want to read to [ES:BX]
-  mov bx, 0x0 ; segment - right after 1st boot sector
+  mov bx, 0x0 ; segment - from memory start
   mov es, bx
-  mov bx, 0x7e00 ; offset
-
+  mov bx, KERNEL_OFFSET ; offset
   int 0x13 ; interrupt for disk routines
-
+  ret

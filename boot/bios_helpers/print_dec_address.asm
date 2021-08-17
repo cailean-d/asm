@@ -1,4 +1,4 @@
-print_dec_address:
+bios_print_dec_address:
   ; save used registers 
   push ax
   push dx
@@ -18,7 +18,7 @@ print_dec_address:
     pop ax
     cmp ax, 0  ; check for end of string
     je .end
-    call print_dec_num
+    call bios_print_dec_num
     jmp .print
   
   .end:
